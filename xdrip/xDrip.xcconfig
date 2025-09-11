@@ -4,7 +4,7 @@
 //
 //
 
-MAIN_APP_BUNDLE_IDENTIFIER = com.$(DEVELOPMENT_TEAM).xdripswift
+MAIN_APP_BUNDLE_IDENTIFIER = com.$(DEVELOPMENT_TEAM).xdripswift2
 
 // Application name [DEFAULT]
 MAIN_APP_DISPLAY_NAME = xDrip4iO5
