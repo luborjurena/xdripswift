@@ -40,7 +40,7 @@ platform :ios do
     )
 
     previous_build_number = latest_testflight_build_number(
-      app_identifier: "com.#{TEAMID}.xdripswift2",
+      app_identifier: "com.#{TEAMID}.xdripswift",
       api_key: api_key,
     )
 
@@ -55,7 +55,7 @@ platform :ios do
       type: "appstore",
       git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
       app_identifier: [
-        "com.#{TEAMID}.xdripswift2",
+        "com.#{TEAMID}.xdripswift",
         "com.#{TEAMID}.xdripswift.xDripWidget",
         "com.#{TEAMID}.xdripswift.watchkitapp",
         "com.#{TEAMID}.xdripswift.watchkitapp.xDripWatchComplication",
@@ -64,7 +64,7 @@ platform :ios do
     )
 
     previous_build_number = latest_testflight_build_number(
-      app_identifier: "com.#{TEAMID}.xdripswift2",
+      app_identifier: "com.#{TEAMID}.xdripswift",
       api_key: api_key,
     )
 
@@ -81,7 +81,7 @@ platform :ios do
 
     update_code_signing_settings(
       path: "#{GITHUB_WORKSPACE}/xdrip.xcodeproj",
-      profile_name: mapping["com.#{TEAMID}.xdripswift2"],
+      profile_name: mapping["com.#{TEAMID}.xdripswift"],
       code_sign_identity: "iPhone Distribution",
       targets: ["xdrip"]
     )
@@ -168,7 +168,7 @@ platform :ios do
       end
     end
 
-    configure_bundle_id("xdrip", "com.#{TEAMID}.xdripswift2", [
+    configure_bundle_id("xdrip", "com.#{TEAMID}.xdripswift", [
       Spaceship::ConnectAPI::BundleIdCapability::Type::APP_GROUPS,
       Spaceship::ConnectAPI::BundleIdCapability::Type::HEALTHKIT,
       Spaceship::ConnectAPI::BundleIdCapability::Type::NFC_TAG_READING
@@ -209,7 +209,7 @@ platform :ios do
       force: true,
       git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
       app_identifier: [
-        "com.#{TEAMID}.xdripswift2",
+        "com.#{TEAMID}.xdripswift",
         "com.#{TEAMID}.xdripswift.xDripWidget",
         "com.#{TEAMID}.xdripswift.watchkitapp",
         "com.#{TEAMID}.xdripswift.watchkitapp.xDripWatchComplication",
@@ -233,7 +233,7 @@ platform :ios do
       bundle_id = Spaceship::ConnectAPI::BundleId.find(identifier)
     end
 
-    find_bundle_id("com.#{TEAMID}.xdripswift2")
+    find_bundle_id("com.#{TEAMID}.xdripswift")
 
     match(
       type: "appstore",
