@@ -19,6 +19,9 @@ enum ConstantsFollower {
     /// number of seconds without a successful follower connection before a warning is shown when in Dexcom Share follower mode
     static let secondsUntilFollowerDisconnectWarningDexcomShare: Int = 310
     
+    /// number of seconds without a successful follower connection before a warning is shown when in Apple Health follower mode
+    static let secondsUntilFollowerDisconnectWarningAppleHealth: Int = 310
+    
     
     // Server URLs for different services
     /// base url for Abbott server statuspage

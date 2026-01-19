@@ -510,6 +510,9 @@ final class RootViewController: UIViewController, ObservableObject {
     /// DexcomShareFollowManager instance
     private var dexcomShareFollowManager: DexcomShareFollowManager?
     
+    /// HealthKitFollowManager instance
+    private var healthKitFollowManager: HealthKitFollowManager?
+    
     /// LoopFollowManager instance
     private var loopFollowManager: LoopFollowManager?
     
@@ -1157,6 +1160,9 @@ final class RootViewController: UIViewController, ObservableObject {
         // setup dexcomShareFollowManager
         dexcomShareFollowManager = DexcomShareFollowManager(coreDataManager: coreDataManager, followerDelegate: self)
         
+        // setup healthKitFollowManager
+        healthKitFollowManager = HealthKitFollowManager(coreDataManager: coreDataManager, followerDelegate: self)
+        
         // setup loop follow manager
         loopFollowManager = LoopFollowManager(coreDataManager: coreDataManager, followerDelegate: self)
         
@@ -1227,6 +1233,7 @@ final class RootViewController: UIViewController, ObservableObject {
             self.nightscoutFollowManager?.download()
             self.libreLinkUpFollowManager?.download()
             self.dexcomShareFollowManager?.download()
+            self.healthKitFollowManager?.download()
         }, cgmTransmitterInfoChanged: cgmTransmitterInfoChanged)
         
         // to initialize UserDefaults.standard.transmitterTypeAsString
@@ -3046,6 +3053,13 @@ final class RootViewController: UIViewController, ObservableObject {
                 } else if let followerPatientName = UserDefaults.standard.followerPatientName {
                     dataSourceSensorMaxAgeOutlet.text = followerPatientName
                 }
+                
+            case .appleHealth:
+                if let followerPatientName = UserDefaults.standard.followerPatientName {
+                    dataSourceSensorMaxAgeOutlet.text = followerPatientName
+                } else {
+                    dataSourceSensorMaxAgeOutlet.text = nil
+                }
             }
         }
     }
@@ -3796,6 +3810,11 @@ extension RootViewController: FollowerDelegate {
                         
                     case .dexcomShare:
                         if let followManager = dexcomShareFollowManager {
+                            _ = followManager.createBgReading(followGlucoseData: followGlucoseData)
+                        }
+                        
+                    case .appleHealth:
+                        if let followManager = healthKitFollowManager {
                             _ = followManager.createBgReading(followGlucoseData: followGlucoseData)
                         }
                     }

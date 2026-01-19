@@ -73,7 +73,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>To update the contact photo with an image showing the current BG values</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Store bloodglucose readings</string>
+	<string>Read and store blood glucose readings from Apple Health</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Store bloodglucose readings</string>
 	<key>NSSupportsLiveActivities</key>

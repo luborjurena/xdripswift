@@ -460,6 +460,11 @@ class SettingsViewDataSourceSettingsViewModel: NSObject, SettingsViewModelProtoc
             case .dexcomShare:
                 // show patient name, upload to nightscout and also account username/password, region
                 return 10
+                
+            case .appleHealth:
+                // Apple Health: show patient name, keep-alive, data source, upload to nightscout
+                // No username/password needed
+                return 6
             }
         }
     }
@@ -876,6 +881,9 @@ extension SettingsViewDataSourceSettingsViewModel {
                 let summary = try JSONDecoder().decode(StatusPageSummaryModel.self, from: data)
                 status = FollowerServiceStatus(indicator: summary.status.indicator)
                 description = summary.status.description
+            case .appleHealth:
+                // Apple Health is local, no service status to fetch
+                return nil
             }
             if status != .ok && status != .unknown {
                 trace("in fetchFollowerServiceStatus, %{public}@ service status issue = '%{public}@'", log: self.log, category: ConstantsLog.categorySettingsViewDataSourceSettingsViewModel, type: .info, followerDataSourceType.description, description)

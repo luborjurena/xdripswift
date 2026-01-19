@@ -332,6 +332,7 @@
 		F821CF8E22AB090C005C1E43 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F821CF8D22AB090C005C1E43 /* DatePickerViewController.swift */; };
 		F821CF9022AB1068005C1E43 /* DatePickerViewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F821CF8F22AB1068005C1E43 /* DatePickerViewData.swift */; };
 		F821CF9522ADB0D7005C1E43 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F821CF9422ADB0D7005C1E43 /* HealthKitManager.swift */; };
+		A1B2C3D4E5F60002AABBCCDD /* HealthKitFollowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60001AABBCCDD /* HealthKitFollowManager.swift */; };
 		F821CF9722AE589E005C1E43 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F821CF9622AE589E005C1E43 /* HealthKit.framework */; };
 		F821CF9D22AEF483005C1E43 /* BGReadingSpeaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F821CF9C22AEF483005C1E43 /* BGReadingSpeaker.swift */; };
 		F82436FC24BE014000BED341 /* TextsLibreStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82436FB24BE014000BED341 /* TextsLibreStates.swift */; };
@@ -1357,6 +1358,7 @@
 		F821CF8D22AB090C005C1E43 /* DatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerViewController.swift; sourceTree = "<group>"; };
 		F821CF8F22AB1068005C1E43 /* DatePickerViewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerViewData.swift; sourceTree = "<group>"; };
 		F821CF9422ADB0D7005C1E43 /* HealthKitManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60001AABBCCDD /* HealthKitFollowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitFollowManager.swift; sourceTree = "<group>"; };
 		F821CF9622AE589E005C1E43 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		F821CF9822AE589E005C1E43 /* xdrip.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = xdrip.entitlements; sourceTree = "<group>"; };
 		F821CF9C22AEF483005C1E43 /* BGReadingSpeaker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BGReadingSpeaker.swift; sourceTree = "<group>"; };
@@ -2602,6 +2604,7 @@
 			isa = PBXGroup;
 			children = (
 				F821CF9422ADB0D7005C1E43 /* HealthKitManager.swift */,
+				A1B2C3D4E5F60001AABBCCDD /* HealthKitFollowManager.swift */,
 			);
 			path = HealthKit;
 			sourceTree = "<group>";
@@ -4572,6 +4575,7 @@
 				F8F1670E27273EA7001AA3D8 /* GlucoseDataRxMessage.swift in Sources */,
 				F8B3A835227F08AC004BA588 /* PickerViewController.swift in Sources */,
 				F821CF9522ADB0D7005C1E43 /* HealthKitManager.swift in Sources */,
+				A1B2C3D4E5F60002AABBCCDD /* HealthKitFollowManager.swift in Sources */,
 				F8CB59CE27444D6300BA199E /* DexcomSessionStopResponse.swift in Sources */,
 				F8F71D812B7EAA2E005076E8 /* DexcomG7+CoreDataProperties.swift in Sources */,
 				F8B3A81D227DEC92004BA588 /* CalibrationsAccessor.swift in Sources */,

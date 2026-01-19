@@ -40,6 +40,7 @@ public enum FollowerDataSourceType: Int, CaseIterable {
     case libreLinkUp = 1
     case libreLinkUpRussia = 2
     case dexcomShare = 3
+    case appleHealth = 4
 
     /// All cases filtered to those currently enabled. Prefer this over 'allCases' when populating UI.
     static var allEnabledCases: [FollowerDataSourceType] {
@@ -70,6 +71,8 @@ public enum FollowerDataSourceType: Int, CaseIterable {
             return "LibreLinkUp Russia"
         case .dexcomShare:
             return "Dexcom Share"
+        case .appleHealth:
+            return "Apple Health"
         }
     }
     
@@ -85,6 +88,8 @@ public enum FollowerDataSourceType: Int, CaseIterable {
             return "LibreLinkUp Russia"
         case .dexcomShare:
             return "Dexcom Share"
+        case .appleHealth:
+            return "Apple Health"
         }
     }
     
@@ -96,6 +101,8 @@ public enum FollowerDataSourceType: Int, CaseIterable {
             return "LL"
         case .dexcomShare:
             return "DS"
+        case .appleHealth:
+            return "AH"
         }
     }
     
@@ -107,13 +114,15 @@ public enum FollowerDataSourceType: Int, CaseIterable {
             return ConstantsFollower.secondsUntilFollowerDisconnectWarningLibreLinkUp
         case .dexcomShare:
             return ConstantsFollower.secondsUntilFollowerDisconnectWarningDexcomShare
+        case .appleHealth:
+            return ConstantsFollower.secondsUntilFollowerDisconnectWarningAppleHealth
         }
     }
 
     /// does this follower mode need a username and password?
     func needsUserNameAndPassword() -> Bool {
         switch self {
-        case .nightscout:
+        case .nightscout, .appleHealth:
             return false
         case .libreLinkUp, .libreLinkUpRussia, .dexcomShare:
             return true
@@ -131,6 +140,8 @@ public enum FollowerDataSourceType: Int, CaseIterable {
             return "LibreLinkUp Russia Follower"
         case .dexcomShare:
             return "Dexcom Share Follower"
+        case .appleHealth:
+            return "Apple Health Follower"
         }
     }
     
@@ -138,6 +149,8 @@ public enum FollowerDataSourceType: Int, CaseIterable {
         switch self {
         case .nightscout, .libreLinkUp, .libreLinkUpRussia, .dexcomShare:
             return true
+        case .appleHealth:
+            return false
         }
     }
     
@@ -151,6 +164,8 @@ public enum FollowerDataSourceType: Int, CaseIterable {
             return ConstantsFollower.followerStatusDexcomBaseUrl
         case .libreLinkUp, .libreLinkUpRussia:
             return ConstantsFollower.followerStatusAbbottBaseUrl
+        case .appleHealth:
+            return ""
         }
     }
     
@@ -163,6 +178,9 @@ public enum FollowerDataSourceType: Int, CaseIterable {
             // both Dexcom and Abbott use Atlassian Statuspage to show
             // their service status so the API path is common and public
             return ConstantsFollower.followerStatusAtlassianApiPath
+        case .appleHealth:
+            // Apple Health is local, no service status
+            return ""
         }
     }
 }

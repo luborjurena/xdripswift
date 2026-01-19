@@ -103,6 +103,9 @@ enum ConstantsLog {
     /// nightscout follow
     static let categoryDexcomShareFollowManager =           "DexcomShareFollowManager      "
     
+    /// Apple Health follow
+    static let categoryHealthKitFollowManager =             "HealthKitFollowManager        "
+    
     /// alertmanager
     static let categoryAlertManager =                       "AlertManager                  "
     
