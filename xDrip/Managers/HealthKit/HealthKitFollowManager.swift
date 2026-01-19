@@ -87,6 +87,7 @@ class HealthKitFollowManager: NSObject {
         // Add observers for UserDefaults changes
         UserDefaults.standard.addObserver(self, forKeyPath: UserDefaults.Key.isMaster.rawValue, options: .new, context: nil)
         UserDefaults.standard.addObserver(self, forKeyPath: UserDefaults.Key.followerDataSourceType.rawValue, options: .new, context: nil)
+        UserDefaults.standard.addObserver(self, forKeyPath: UserDefaults.Key.followerBackgroundKeepAliveType.rawValue, options: .new, context: nil)
         
         // Start or stop follow mode based on current settings
         verifyUserDefaultsAndStartOrStopFollowMode()
@@ -98,6 +99,7 @@ class HealthKitFollowManager: NSObject {
         // Remove UserDefaults observers
         UserDefaults.standard.removeObserver(self, forKeyPath: UserDefaults.Key.isMaster.rawValue)
         UserDefaults.standard.removeObserver(self, forKeyPath: UserDefaults.Key.followerDataSourceType.rawValue)
+        UserDefaults.standard.removeObserver(self, forKeyPath: UserDefaults.Key.followerBackgroundKeepAliveType.rawValue)
         
         // Stop keep-alive
         disableSuspensionPrevention()
@@ -449,19 +451,20 @@ class HealthKitFollowManager: NSObject {
     /// Verify UserDefaults and start or stop follow mode
     private func verifyUserDefaultsAndStartOrStopFollowMode() {
         if !UserDefaults.standard.isMaster && UserDefaults.standard.followerDataSourceType == .appleHealth {
-            // Request authorization if needed
+            // Enable suspension prevention immediately if needed (don't wait for auth callback)
+            // This is critical for background operation
+            if UserDefaults.standard.followerBackgroundKeepAliveType.shouldKeepAlive {
+                enableSuspensionPrevention()
+            } else {
+                disableSuspensionPrevention()
+            }
+            
+            // Request authorization and start downloading
             requestReadAuthorization { [weak self] success in
                 guard let self = self else { return }
                 
                 DispatchQueue.main.async {
                     if success {
-                        // Enable suspension prevention if needed
-                        if UserDefaults.standard.followerBackgroundKeepAliveType.shouldKeepAlive {
-                            self.enableSuspensionPrevention()
-                        } else {
-                            self.disableSuspensionPrevention()
-                        }
-                        
                         // Start initial download
                         self.download()
                     } else {
@@ -495,6 +498,21 @@ class HealthKitFollowManager: NSObject {
             if keyValueObserverTimeKeeper.verifyKey(forKey: keyPathEnum.rawValue, withMinimumDelayMilliSeconds: 200) {
                 verifyUserDefaultsAndStartOrStopFollowMode()
             }
+            
+        case .followerBackgroundKeepAliveType:
+            // Only react if we're in Apple Health follower mode
+            if !UserDefaults.standard.isMaster && UserDefaults.standard.followerDataSourceType == .appleHealth {
+                if keyValueObserverTimeKeeper.verifyKey(forKey: keyPathEnum.rawValue, withMinimumDelayMilliSeconds: 200) {
+                    trace("followerBackgroundKeepAliveType changed, updating suspension prevention", log: self.log, category: ConstantsLog.categoryHealthKitFollowManager, type: .info)
+                    
+                    if UserDefaults.standard.followerBackgroundKeepAliveType.shouldKeepAlive {
+                        enableSuspensionPrevention()
+                    } else {
+                        disableSuspensionPrevention()
+                    }
+                }
+            }
+            
         default:
             break
         }
