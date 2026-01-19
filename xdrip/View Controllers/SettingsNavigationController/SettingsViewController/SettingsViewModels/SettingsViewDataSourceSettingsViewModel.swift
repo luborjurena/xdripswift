@@ -353,6 +353,10 @@ class SettingsViewDataSourceSettingsViewModel: NSObject, SettingsViewModelProtoc
             }, cancelHandler: nil, didSelectRowHandler: nil)
             
         case .followerExtraRow5:
+            // Apple Health is local, no service status page to open
+            if UserDefaults.standard.followerDataSourceType == .appleHealth {
+                return .nothing
+            }
             if let url = URL(string: UserDefaults.standard.followerDataSourceType.serviceStatusBaseUrlString(nightscoutUrl: UserDefaults.standard.nightscoutUrl)) {
                 openWeb(url)
             }
@@ -462,9 +466,9 @@ class SettingsViewDataSourceSettingsViewModel: NSObject, SettingsViewModelProtoc
                 return 10
                 
             case .appleHealth:
-                // Apple Health: show patient name, keep-alive, data source, upload to nightscout
+                // Apple Health: show patient name, keep-alive, data source, service status (N/A), upload to nightscout
                 // No username/password needed
-                return 6
+                return 7
             }
         }
     }
@@ -532,8 +536,12 @@ class SettingsViewDataSourceSettingsViewModel: NSObject, SettingsViewModelProtoc
         case .followerExtraRow2:
             return UserDefaults.standard.isMaster ? .none : .disclosureIndicator
             
-        case .followerExtraRow3, .followerExtraRow4, .followerExtraRow5, .followerExtraRow7, .followerExtraRow8:
+        case .followerExtraRow3, .followerExtraRow4, .followerExtraRow7, .followerExtraRow8:
             return .disclosureIndicator
+            
+        case .followerExtraRow5:
+            // Apple Health is local, no service status page
+            return UserDefaults.standard.followerDataSourceType == .appleHealth ? .none : .disclosureIndicator
             
         case .followerExtraRow9:
             // if we're using Dexcom and there is a valid region, then show the disclosure indicator
@@ -564,6 +572,10 @@ class SettingsViewDataSourceSettingsViewModel: NSObject, SettingsViewModelProtoc
             return UserDefaults.standard.followerDataSourceType.description
             
         case .followerExtraRow5:
+            // Apple Health is local, no service status to check
+            if UserDefaults.standard.followerDataSourceType == .appleHealth {
+                return "N/A"
+            }
             return followerServiceStatusResult.status.icon + " " + followerServiceStatusResult.description
             
         case .followerExtraRow6:
