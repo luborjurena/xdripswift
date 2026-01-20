@@ -408,44 +408,47 @@ class HealthKitFollowManager: NSObject {
         ApplicationManager.shared.removeClosureToRunWhenAppWillEnterForeground(key: applicationManagerKeySuspendPlaySoundTimer)
     }
     
-    /// Enable suspension prevention
+    /// launches timer that will regular play sound - this will be played only when app goes to background and only if the user wants to keep the app alive
     private func enableSuspensionPrevention() {
-        guard UserDefaults.standard.followerBackgroundKeepAliveType.shouldKeepAlive else {
-            trace("not enabling suspension prevention as keep-alive type is: %{public}@", log: self.log, category: ConstantsLog.categoryHealthKitFollowManager, type: .info, UserDefaults.standard.followerBackgroundKeepAliveType.description)
+        // if keep-alive is not needed, then just return and do nothing
+        if !UserDefaults.standard.followerBackgroundKeepAliveType.shouldKeepAlive {
+            trace("not enabling suspension prevention as keep-alive type is: %{public}@", log: self.log, category: ConstantsLog.categoryHealthKitFollowManager, type: .debug, UserDefaults.standard.followerBackgroundKeepAliveType.description)
             return
         }
         
-        let interval = UserDefaults.standard.followerBackgroundKeepAliveType == .normal
-            ? ConstantsSuspensionPrevention.intervalNormal
-            : ConstantsSuspensionPrevention.intervalAggressive
+        let interval = UserDefaults.standard.followerBackgroundKeepAliveType == .normal ? ConstantsSuspensionPrevention.intervalNormal : ConstantsSuspensionPrevention.intervalAggressive
         
-        playSoundTimer = RepeatingTimer(timeInterval: TimeInterval(Double(interval))) { [weak self] in
+        // create playSoundTimer depending on the keep-alive type selected
+        playSoundTimer = RepeatingTimer(timeInterval: TimeInterval(Double(interval)), eventHandler: { [weak self] in
             guard let self = self else { return }
-            
+            // play the sound
             trace("in eventhandler checking if audioplayer exists", log: self.log, category: ConstantsLog.categoryHealthKitFollowManager, type: .info)
-            
             if let audioPlayer = self.audioPlayer, !audioPlayer.isPlaying {
-                trace("playing audio every %{public}@ seconds for Apple Health keep-alive", log: self.log, category: ConstantsLog.categoryHealthKitFollowManager, type: .info, interval.description)
+                trace("playing audio every %{public}@ seconds. %{public}@ keep-alive: %{public}@", log: self.log, category: ConstantsLog.categoryHealthKitFollowManager, type: .info, interval.description, UserDefaults.standard.followerDataSourceType.description, UserDefaults.standard.followerBackgroundKeepAliveType.description)
                 audioPlayer.play()
             }
-        }
+        })
         
-        ApplicationManager.shared.addClosureToRunWhenAppDidEnterBackground(key: applicationManagerKeyResumePlaySoundTimer) { [weak self] in
+        // schedulePlaySoundTimer needs to be created when app goes to background
+        ApplicationManager.shared.addClosureToRunWhenAppDidEnterBackground(key: applicationManagerKeyResumePlaySoundTimer, closure: { [weak self] in
             guard let self = self else { return }
-            
             if UserDefaults.standard.followerBackgroundKeepAliveType.shouldKeepAlive {
-                self.playSoundTimer?.resume()
-                
+                if let playSoundTimer = self.playSoundTimer {
+                    playSoundTimer.resume()
+                }
                 if let audioPlayer = self.audioPlayer, !audioPlayer.isPlaying {
                     audioPlayer.play()
                 }
             }
-        }
+        })
         
-        ApplicationManager.shared.addClosureToRunWhenAppWillEnterForeground(key: applicationManagerKeySuspendPlaySoundTimer) { [weak self] in
+        // schedulePlaySoundTimer needs to be invalidated when app goes to foreground
+        ApplicationManager.shared.addClosureToRunWhenAppWillEnterForeground(key: applicationManagerKeySuspendPlaySoundTimer, closure: { [weak self] in
             guard let self = self else { return }
-            self.playSoundTimer?.suspend()
-        }
+            if let playSoundTimer = self.playSoundTimer {
+                playSoundTimer.suspend()
+            }
+        })
     }
     
     /// Verify UserDefaults and start or stop follow mode
