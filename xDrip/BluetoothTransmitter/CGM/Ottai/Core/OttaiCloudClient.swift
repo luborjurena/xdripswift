@@ -341,13 +341,14 @@ enum OttaiCloudClient {
         bind(mac: mac, deviceVersion: deviceVersion, userId: OttaiRegistry.loadUserId(), contract: .v3)
     }
 
-    private static func bind(mac: String, deviceVersion: String, userId: String?, contract: BindContract) -> DeviceResp? {
+    private static func bind(mac: String, deviceVersion: String, userId: String?, contract: BindContract, activeTimeMs: Int64? = nil) -> DeviceResp? {
         let canonical = OttaiConstants.canonicalSensorId(mac)
         if canonical.isEmpty || deviceVersion.isEmpty { lastFailure = CloudFailure(text: "bind requires mac and deviceVersion"); return nil }
         if contract == .v3 && (userId?.isEmpty ?? true) { lastFailure = CloudFailure(text: "bindV3 requires a signed-in session (userId)"); return nil }
         let ts = now()
+        let activeMs = activeTimeMs ?? ts
         let body = bindRequestBody(mac: canonical, deviceVersion: deviceVersion.trimmingCharacters(in: .whitespaces), userId: userId,
-                                   activeTime: contract == .v3 ? ts / 1000 : ts, contract: contract)
+                                   activeTime: contract == .v3 ? activeMs / 1000 : activeMs, contract: contract)
         let endpoint = contract == .v3 ? OttaiConstants.epBindV3 : OttaiConstants.epBind
         guard let resp = httpPostJson(base() + endpoint, json(body), headers(ts: ts, apiBase: base())) else { return nil }
         return parseDeviceResp(resp)
@@ -425,6 +426,42 @@ enum OttaiCloudClient {
         let ts = now()
         guard let resp = httpGet(base() + OttaiConstants.epGetBindDevice, [:], headers(ts: ts, apiBase: base())) else { return nil }
         return parseDeviceResp(resp)
+    }
+
+    // MARK: - account binding (xDrip only)
+
+    // The Syai app shows only the sensor bound to the account, and an account has one bound sensor.
+    enum BindState: Equatable {
+        /// deviceId is the id of the bound device record, the one the Syai app shows.
+        case thisSensor(deviceId: Int)
+        case unbound
+        case other(String)
+    }
+
+    /// Nil when the server could not be asked (see lastFailure).
+    static func bindState(mac: String) -> BindState? {
+        let ts = now()
+        guard let resp = httpGet(base() + OttaiConstants.epGetBindDevice, [:], headers(ts: ts, apiBase: base())), lastFailure == nil else { return nil }
+        let data = dataObject(resp)
+        let vo = (data?["cgmDeviceRespVO"] as? [String: Any]) ?? data
+        let bound = OttaiConstants.canonicalSensorId(str(vo, "mac"))
+        if bound.isEmpty { return .unbound }
+        return OttaiConstants.matchesCanonicalOrKnownNativeAlias(bound, mac) ? .thisSensor(deviceId: Int(longLoose(vo, "id"))) : .other(bound)
+    }
+
+    /// Binds the sensor for good. The server takes activeTime as the sensor start, so it must be the real one.
+    static func bindPermanently(mac: String, materials: OttaiRegistry.DeviceMaterials) -> Bool {
+        guard materials.activeTimeMs > 0 else { lastFailure = CloudFailure(text: "activation time not known yet"); return false }
+        let version = materials.deviceVersion.isEmpty ? syaiMaterialBindDeviceVersion : materials.deviceVersion
+        _ = bind(mac: mac, deviceVersion: version, userId: OttaiRegistry.loadUserId(), contract: .legacy, activeTimeMs: materials.activeTimeMs)
+        return lastFailure == nil
+    }
+
+    /// Unbinds the sensor if the account still has it bound. Same as JugglucoNG on sensor removal:
+    /// a sensor left bound blocks the next one.
+    static func releaseIfBound(mac: String) -> Bool {
+        guard !OttaiRegistry.loadAccessToken().isEmpty, case .thisSensor? = bindState(mac: mac) else { return false }
+        return unbind(mac: mac)
     }
 
     static func listDevices(pageSize: Int = 80, pageNumber: Int = 1) -> [DeviceSummary] {

@@ -872,6 +872,10 @@ private extension BluetoothPeripheralDetailState {
             UserDefaults.standard.stopActiveSensor = true
         }
 
+        if let ottai = bluetoothPeripheral as? Ottai {
+            releaseOttaiBinding(ottaiCloudId(for: ottai))
+        }
+
         bluetoothPeripheralManager.deleteBluetoothPeripheral(bluetoothPeripheral: bluetoothPeripheral)
 
         // Deleting a configured CGM is a distinct user action from merely disconnecting it. CGMs use
@@ -2733,6 +2737,7 @@ private extension BluetoothPeripheralDetailState {
                 ottai.ottaiSensorId = newId
                 if newId != oldId {
                     self?.forgetOttaiBleAddress(for: ottai)
+                    self?.releaseOttaiBinding(oldId)
                 }
                 self?.refresh()
                 self?.recreateOttaiTransmitterIfMaterialsReady(for: ottai)
@@ -2886,6 +2891,17 @@ private extension BluetoothPeripheralDetailState {
             },
             secondaryButtonTitle: Texts_Common.Cancel
         )
+    }
+
+    /// Unbinds a sensor that is removed or replaced in xDrip, so it does not block the next one.
+    func releaseOttaiBinding(_ sensorId: String) {
+        guard !sensorId.isEmpty, ottaiIsSignedIn else { return }
+        let log = self.log
+        DispatchQueue.global(qos: .utility).async {
+            if OttaiCloudClient.releaseIfBound(mac: sensorId) {
+                trace("Ottai sensor %{public}@ unbound from the cloud account", log: log, category: ConstantsLog.categoryBluetoothPeripheralViewController, type: .info, sensorId)
+            }
+        }
     }
 
     func showOttaiUploadStatus() {

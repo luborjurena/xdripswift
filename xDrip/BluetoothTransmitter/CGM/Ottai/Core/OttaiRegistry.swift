@@ -207,6 +207,10 @@ enum OttaiRegistry {
         d.set(pending, forKey: K.v3BootstrapPendingPrefix + OttaiConstants.canonicalSensorId(id))
     }
 
+    static func saveDeviceId(_ id: String, _ deviceId: Int) {
+        d.set(deviceId, forKey: K.deviceIdPrefix + canonical(id))
+    }
+
     static func loadActivationAttempted(_ id: String) -> Bool {
         d.bool(forKey: K.activationAttemptedPrefix + OttaiConstants.canonicalSensorId(id))
     }

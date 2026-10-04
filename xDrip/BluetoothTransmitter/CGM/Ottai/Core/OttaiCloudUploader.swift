@@ -59,6 +59,7 @@ final class OttaiCloudUploader {
     private static let firstRetryDelay: TimeInterval = 60
     private static let maxRetryDelay: TimeInterval = 15 * 60
     private static let requestTimeout: TimeInterval = 30
+    private static let bindCheckDelay: TimeInterval = 15 * 60
 
     // MARK: - state
 
@@ -74,6 +75,10 @@ final class OttaiCloudUploader {
     private var retryDelay: TimeInterval = OttaiCloudUploader.firstRetryDelay
     /// The customerId of the signed-in account, found once per app run.
     private var cachedCustomerId: String?
+    private var bindConfirmed = false
+    private var nextBindCheck = Date.distantPast
+    /// Shown after the upload status while the Syai app does not show this sensor.
+    private var bindNotice: String?
 
     init(sensorId: String) {
         self.sensorId = sensorId
@@ -152,7 +157,7 @@ final class OttaiCloudUploader {
             return
         }
 
-        let materials = OttaiRegistry.loadMaterials(sensorId: sensorId)
+        var materials = OttaiRegistry.loadMaterials(sensorId: sensorId)
         guard materials.deviceId > 0 else {
             trace("cloud upload skipped: no cloud device id for sensor %{public}@", log: log, category: ConstantsLog.categoryCGMOttai, type: .error, sensorId)
             Self.setStatus("No cloud device id for this sensor — fetch the sensor from the cloud")
@@ -160,6 +165,7 @@ final class OttaiCloudUploader {
             return
         }
 
+        ensureBound(&materials)
         let customerId = resolveCustomerId()
         let batch = Array(pending.prefix(Self.maxBatch))
         guard let request = buildRequest(batch: batch, materials: materials, customerId: customerId) else {
@@ -199,7 +205,7 @@ final class OttaiCloudUploader {
         pending.removeAll { sent.contains($0.dataNo) }
         retryDelay = Self.firstRetryDelay
         let stamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .short)
-        Self.setStatus("\(batch.count) reading(s) uploaded at \(stamp)")
+        Self.setStatus("\(batch.count) reading(s) uploaded at \(stamp)" + (bindNotice.map { " — \($0)" } ?? ""))
         trace("cloud upload: ok count=%{public}d pending=%{public}d", log: log, category: ConstantsLog.categoryCGMOttai, type: .info, batch.count, pending.count)
         if !pending.isEmpty { scheduleFlush(after: 0.5) }
     }
@@ -213,6 +219,44 @@ final class OttaiCloudUploader {
     private func scheduleRetry() {
         scheduleFlush(after: retryDelay)
         retryDelay = min(retryDelay * 2, Self.maxRetryDelay)
+    }
+
+    // MARK: - bind to the account
+
+    /// The server takes readings of an unbound sensor, but the Syai app shows only the bound one.
+    /// The setup binds an old Syai sensor only for a moment, so bind it here. Another bound
+    /// sensor is left alone. Readings go to the deviceId of the bound record.
+    private func ensureBound(_ materials: inout OttaiRegistry.DeviceMaterials) {
+        guard !bindConfirmed, Date() >= nextBindCheck else { return }
+        nextBindCheck = Date().addingTimeInterval(Self.bindCheckDelay)
+        switch OttaiCloudClient.bindState(mac: sensorId) {
+        case .thisSensor(let deviceId)?:
+            if deviceId > 0 && deviceId != materials.deviceId {
+                trace("cloud bind: bound deviceId=%{public}d, saved deviceId=%{public}d; uploading to the bound one", log: log, category: ConstantsLog.categoryCGMOttai, type: .error, deviceId, materials.deviceId)
+                OttaiRegistry.saveDeviceId(sensorId, deviceId)
+                materials.deviceId = deviceId
+            }
+            bindConfirmed = true
+            bindNotice = nil
+        case .other(let bound)?:
+            trace("cloud bind: the account has sensor %{public}@ bound, not %{public}@", log: log, category: ConstantsLog.categoryCGMOttai, type: .error, bound, sensorId)
+            bindNotice = "the Syai account has sensor \(bound) bound, unbind it in the Syai app"
+        case .unbound?:
+            if materials.activeTimeMs <= 0 {
+                // wait for the confirmed activation time from the first live readings
+                nextBindCheck = Date().addingTimeInterval(Self.firstRetryDelay)
+            } else if OttaiCloudClient.bindPermanently(mac: sensorId, materials: materials) {
+                trace("cloud bind: sensor %{public}@ bound, activeTime=%{public}@", log: log, category: ConstantsLog.categoryCGMOttai, type: .info, sensorId, "\(materials.activeTimeMs / 1000)")
+                // check again on the next upload to take the deviceId of the new record
+                nextBindCheck = .distantPast
+                bindNotice = nil
+            } else {
+                trace("cloud bind failed: %{public}@", log: log, category: ConstantsLog.categoryCGMOttai, type: .error, OttaiCloudClient.lastError)
+                bindNotice = "bind failed: \(OttaiCloudClient.lastError)"
+            }
+        case nil:
+            trace("cloud bind check failed: %{public}@", log: log, category: ConstantsLog.categoryCGMOttai, type: .error, OttaiCloudClient.lastError)
+        }
     }
 
     // MARK: - customer id
