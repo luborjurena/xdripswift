@@ -566,11 +566,9 @@ class BluetoothPeripheralManager: NSObject {
                 fatalError("in createNewTransmitter, OttaiType, cgmTransmitterDelegate is nil")
             }
 
-            // A normal scan does not know the Ottai cloud id. The setup screen saves it
-            // (login or JSON import), and we take the last saved sensor here.
-            let stagedSensorId = OttaiRegistry.persistedRecords().last?.sensorId ?? ""
-
-            return CGMOttaiTransmitter(address: nil, name: nil, sensorId: stagedSensorId, bluetoothTransmitterDelegate: bluetoothTransmitterDelegate ?? self, cGMTransmitterDelegate: cgmTransmitterDelegate)
+            // Setup must never authenticate a newly discovered device with the last
+            // sensor's keys. It stays idle until its own Cloud ID has been entered.
+            return CGMOttaiTransmitter(address: nil, name: nil, sensorId: "", bluetoothTransmitterDelegate: bluetoothTransmitterDelegate ?? self, cGMTransmitterDelegate: cgmTransmitterDelegate)
 
         case .Libre3HeartBeatType:
             

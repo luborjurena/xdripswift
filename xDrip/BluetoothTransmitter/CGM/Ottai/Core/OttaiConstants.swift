@@ -246,18 +246,18 @@ enum OttaiConstants {
     // MARK: - Warmup
 
     static let defaultReadingIntervalMinutes = 1
-    static let defaultWarmupSeconds = 3200
+    static let defaultWarmupSeconds = 3600
     static let defaultPreheatPeriodMs: Int64 = 3_600_000
 
     /// For this time after activation, readings are decoded but not used.
-    /// The official app waits 60 minutes. Real sensors settle in about 10 minutes,
-    /// so we use 10 minutes.
-    static let warmupSuppressMs: Int64 = 600_000
+    /// Never shorten the manufacturer's 60-minute warmup for an AID data source.
+    static let warmupSuppressMs: Int64 = defaultPreheatPeriodMs
 
     /// True if the sample is inside the warmup window. Pass 0 as the start to turn
     /// the check off.
-    static func isWithinWarmup(activationStartMs: Int64, sampleMs: Int64) -> Bool {
-        activationStartMs > 0 && sampleMs > 0 && sampleMs < activationStartMs + warmupSuppressMs
+    static func isWithinWarmup(activationStartMs: Int64, sampleMs: Int64, preheatPeriodMs: Int64 = defaultPreheatPeriodMs) -> Bool {
+        let period = max(warmupSuppressMs, preheatPeriodMs)
+        return activationStartMs > 0 && sampleMs > 0 && sampleMs - activationStartMs < period
     }
 
     /// After the lifetime is over, wait this long without samples before calling the sensor expired.

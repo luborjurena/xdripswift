@@ -844,6 +844,17 @@
 		F8FDFEAD260DE1B90047597D /* ConstantsUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FDFEAC260DE1B90047597D /* ConstantsUI.swift */; };
 		FBA100020000000000000001 /* FollowerBackgroundKeepAliveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA100010000000000000001 /* FollowerBackgroundKeepAliveManager.swift */; };
 		FBA100040000000000000001 /* FollowerBackgroundKeepAliveManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA100030000000000000001 /* FollowerBackgroundKeepAliveManagerTests.swift */; };
+		84E870249BBF3BDD7EED3AC3 /* OttaiAccountSensors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFAE7AAFEFF9BF5D4178CDEA; };
+		9E49E453FAE0B6B03AE782F0 /* OttaiGlobalContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C512511FEABE0C850419D9B; };
+		0EBBBC8213A72D8B601C109B /* OttaiLoginFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4162A4915335D65989F918; };
+		B8A720BFCC8ED790281027BD /* OttaiNetSecurity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E1D8221AADAD2A449A6D66; };
+		12DB9F0DE5FA0C12D8AD3EE9 /* OttaiRegionalTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8446CD8716252FA46AC042; };
+		B1F95D1E2073F970A8F084D4 /* OttaiSecureHTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DAB380E3B99A8035ACD11FD; };
+		38F262187B19386C8D6263CA /* OttaiAccountSensorsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0CE270CC32732293D868DC; };
+		78D13C1E45722149DF814169 /* OttaiGlobalLoginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D942D1ED39D250E75C35AAF3; };
+		E91F82465B222053419B7AFA /* OttaiLoginFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A9C8AB91A3689C7260AA6B; };
+		63EC3BCA6357C9AB18918F50 /* OttaiNetSecurityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20551904080FF7C57D066A; };
+		40D805EAE06B28BE24514A3D /* OttaiRegionalTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6913BC6BC48B1734B59F01; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2068,6 +2079,17 @@
 		F8FDFEAC260DE1B90047597D /* ConstantsUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstantsUI.swift; sourceTree = "<group>"; };
 		FBA100010000000000000001 /* FollowerBackgroundKeepAliveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerBackgroundKeepAliveManager.swift; sourceTree = "<group>"; };
 		FBA100030000000000000001 /* FollowerBackgroundKeepAliveManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerBackgroundKeepAliveManagerTests.swift; sourceTree = "<group>"; };
+		FFAE7AAFEFF9BF5D4178CDEA /* OttaiAccountSensors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip/BluetoothTransmitter/CGM/Ottai/Core/OttaiAccountSensors.swift"; sourceTree = SOURCE_ROOT; };
+		6C512511FEABE0C850419D9B /* OttaiGlobalContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip/BluetoothTransmitter/CGM/Ottai/Core/OttaiGlobalContract.swift"; sourceTree = SOURCE_ROOT; };
+		5C4162A4915335D65989F918 /* OttaiLoginFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip/BluetoothTransmitter/CGM/Ottai/Core/OttaiLoginFlow.swift"; sourceTree = SOURCE_ROOT; };
+		22E1D8221AADAD2A449A6D66 /* OttaiNetSecurity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip/BluetoothTransmitter/CGM/Ottai/Core/OttaiNetSecurity.swift"; sourceTree = SOURCE_ROOT; };
+		2A8446CD8716252FA46AC042 /* OttaiRegionalTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip/BluetoothTransmitter/CGM/Ottai/Core/OttaiRegionalTransport.swift"; sourceTree = SOURCE_ROOT; };
+		3DAB380E3B99A8035ACD11FD /* OttaiSecureHTTP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip/BluetoothTransmitter/CGM/Ottai/Core/OttaiSecureHTTP.swift"; sourceTree = SOURCE_ROOT; };
+		6C0CE270CC32732293D868DC /* OttaiAccountSensorsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip Tests/OttaiAccountSensorsTests.swift"; sourceTree = SOURCE_ROOT; };
+		D942D1ED39D250E75C35AAF3 /* OttaiGlobalLoginTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip Tests/OttaiGlobalLoginTests.swift"; sourceTree = SOURCE_ROOT; };
+		21A9C8AB91A3689C7260AA6B /* OttaiLoginFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip Tests/OttaiLoginFlowTests.swift"; sourceTree = SOURCE_ROOT; };
+		AC20551904080FF7C57D066A /* OttaiNetSecurityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip Tests/OttaiNetSecurityTests.swift"; sourceTree = SOURCE_ROOT; };
+		DB6913BC6BC48B1734B59F01 /* OttaiRegionalTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xDrip Tests/OttaiRegionalTransportTests.swift"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -4504,6 +4526,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40D805EAE06B28BE24514A3D /* OttaiRegionalTransportTests.swift in Sources */,
+				63EC3BCA6357C9AB18918F50 /* OttaiNetSecurityTests.swift in Sources */,
+				E91F82465B222053419B7AFA /* OttaiLoginFlowTests.swift in Sources */,
+				78D13C1E45722149DF814169 /* OttaiGlobalLoginTests.swift in Sources */,
+				38F262187B19386C8D6263CA /* OttaiAccountSensorsTests.swift in Sources */,
 				4F3200013008000100000001 /* BgReadingTrendTests.swift in Sources */,
 				5A0100043015000100000001 /* GlucoseRangeDistributionTests.swift in Sources */,
 				5A0921023015000100000001 /* GMIStatisticsTests.swift in Sources */,
@@ -4538,6 +4565,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1F95D1E2073F970A8F084D4 /* OttaiSecureHTTP.swift in Sources */,
+				12DB9F0DE5FA0C12D8AD3EE9 /* OttaiRegionalTransport.swift in Sources */,
+				B8A720BFCC8ED790281027BD /* OttaiNetSecurity.swift in Sources */,
+				0EBBBC8213A72D8B601C109B /* OttaiLoginFlow.swift in Sources */,
+				9E49E453FAE0B6B03AE782F0 /* OttaiGlobalContract.swift in Sources */,
+				84E870249BBF3BDD7EED3AC3 /* OttaiAccountSensors.swift in Sources */,
 				5A0100023015000100000001 /* GlucoseRangeDistribution.swift in Sources */,
 				4D7A00023014000100000001 /* TroubleshootingLog.swift in Sources */,
 				4D7A00043014000100000001 /* TroubleshootingLogView.swift in Sources */,

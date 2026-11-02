@@ -127,6 +127,20 @@ enum OttaiSyaiClient {
         authed("PUT", path: "deviceBind/unBindDevice", body: ["mac": mac, "deviceType": "cgm", "unbindType": unbindType])
     }
 
+    /// Snapshot the failure under this client's session lock, independently of the legacy global error.
+    static func getBindDeviceResult() -> OttaiCloudClient.RequestResult {
+        gate.lock(); defer { gate.unlock() }
+        operationFailure = nil
+        let body = getBindDevice()
+        return .init(body: body, failure: operationFailure)
+    }
+
+    private static var operationFailure: OttaiCloudClient.CloudFailure?
+    private static func recordFailure(_ failure: OttaiCloudClient.CloudFailure?) {
+        operationFailure = failure
+        OttaiCloudClient.lastFailure = failure
+    }
+
     static func getBindDevice() -> [String: Any]? {
         authed("GET", path: "deviceBind/getBindDevice", body: [:])
     }
@@ -325,7 +339,7 @@ enum OttaiSyaiClient {
     /// Sets OttaiCloudClient.lastFailure the same way the plain client does.
     private static func finish(_ r: Reply) -> [String: Any]? {
         if let error = r.error {
-            OttaiCloudClient.lastFailure = OttaiCloudClient.CloudFailure(text: error)
+            recordFailure(OttaiCloudClient.CloudFailure(text: error))
             return nil
         }
         let code = r.code
@@ -333,10 +347,10 @@ enum OttaiSyaiClient {
         let ok = code.isEmpty || code == "200" || code.caseInsensitiveCompare("OK") == .orderedSame || code.caseInsensitiveCompare("SUCCESS") == .orderedSame
         if !(200 ... 299).contains(r.status) || !ok {
             let msg = [anyToString(r.json?["message"]), anyToString(r.json?["msg"]), anyToString(r.json?["detailMessage"])].first { !$0.isEmpty } ?? ""
-            OttaiCloudClient.lastFailure = OttaiCloudClient.CloudFailure(text: "http=\(r.status) biz=\(code) \(msg.prefix(120))".trimmingCharacters(in: .whitespaces), code: code)
+            recordFailure(OttaiCloudClient.CloudFailure(text: "http=\(r.status) biz=\(code) \(msg.prefix(120))".trimmingCharacters(in: .whitespaces), code: code, httpStatus: r.status))
             return nil
         }
-        OttaiCloudClient.lastFailure = nil
+        recordFailure(nil)
         return r.json ?? [:]
     }
 
@@ -380,7 +394,7 @@ enum OttaiSyaiClient {
     // MARK: - helpers
 
     private static func fail<T>(_ text: String) -> T? {
-        OttaiCloudClient.lastFailure = OttaiCloudClient.CloudFailure(text: text)
+        recordFailure(OttaiCloudClient.CloudFailure(text: text))
         return nil
     }
 
